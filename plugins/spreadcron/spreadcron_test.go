@@ -252,6 +252,33 @@ var spreadcronTests = []spreadcronTest{
 			serverResponse{status: http.StatusServiceUnavailable},
 		},
 		recv: "PRIVMSG #chan :nick: an error occurred, please try again later",
+	}, {
+		desc: "list does not show master",
+		send: "[#chan] mup: spreadcron list",
+		serverResponses: []serverResponse{serverResponse{body: `[
+  {
+    "name": "built-image-amd64-smoketest",
+    "commit": {
+      "sha": "0a37352f456fbbb30eccbdee3d55261cc9b65cc1",
+      "url": "https://api.github.com/repos/snapcore/spread-cron/commits/0a37352f456fbbb30eccbdee3d55261cc9b65cc1"
+    }
+  },
+  {
+    "name": "master",
+    "commit": {
+      "sha": "d5cbf4e3f07d84e2b49948ab5ac404d5fc02f735",
+      "url": "https://api.github.com/repos/snapcore/spread-cron/commits/d5cbf4e3f07d84e2b49948ab5ac404d5fc02f735"
+    }
+  },
+  {
+    "name": "core-amd64-refresh-to-beta",
+    "commit": {
+      "sha": "d5cbf4e3f07d84e2b49948ab5ac404d5fc02f735",
+      "url": "https://api.github.com/repos/snapcore/spread-cron/commits/d5cbf4e3f07d84e2b49948ab5ac404d5fc02f735"
+    }
+  }
+]`}},
+		recv: "PRIVMSG #chan :nick: built-image-amd64-smoketest_core-amd64-refresh-to-beta",
 	},
 }
 

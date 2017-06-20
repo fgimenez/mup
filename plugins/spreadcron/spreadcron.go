@@ -142,7 +142,9 @@ func (p *spreadcronPlugin) getBranches() (string, error) {
 	}
 	var output []string
 	for _, result := range results {
-		output = append(output, result.Name)
+		if result.Name != "master" {
+			output = append(output, result.Name)
+		}
 	}
 	return strings.Join(output, "\n"), nil
 }
