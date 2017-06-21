@@ -115,7 +115,7 @@ trigger: execute the given job`
 			}
 		} else {
 			if p.checkAllowed(cmd.Message.Nick) {
-				msg, err = p.trigger(items[1])
+				msg, err = p.trigger(items[1], cmd.Account, cmd.Channel, cmd.Nick)
 				if err != nil {
 					msg = errMsg
 				}
@@ -149,7 +149,7 @@ func (p *spreadcronPlugin) getBranches() (string, error) {
 	return strings.Join(output, "\n"), nil
 }
 
-func (p *spreadcronPlugin) trigger(branch string) (string, error) {
+func (p *spreadcronPlugin) trigger(branch, account, channel, nick string) (string, error) {
 	res, err := p.get("/repos/" + p.config.Project + "/contents/triggers?ref=" + branch)
 
 	if err == nil || err.Error() == "resource not found" {
@@ -171,7 +171,7 @@ func (p *spreadcronPlugin) trigger(branch string) (string, error) {
 		}
 
 		commiter := &Committer{Name: p.config.Name, Email: p.config.Email}
-		content := "build triggered by mup"
+		content := fmt.Sprintf("build triggered by %s on %s%s", nick, account, channel)
 		body := &Payload{
 			Message:   content,
 			Content:   base64.StdEncoding.EncodeToString([]byte(content)),

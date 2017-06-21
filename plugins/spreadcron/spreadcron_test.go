@@ -23,6 +23,9 @@ var _ = check.Suite(&spreadcronSuite{})
 type ghServer struct {
 	server         *httptest.Server
 	responses      []serverResponse
+	account        string
+	user           string
+	channel        string
 	responsesIndex int
 }
 
@@ -64,6 +67,10 @@ func (s *ghServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
+		if payload.Message != fmt.Sprintf("build triggered by %s on %s%s", s.user, s.account, s.channel) {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return
+		}
 	}
 
 	totalResponses := len(s.responses)
@@ -91,6 +98,9 @@ func (s *ghServer) Close() {
 func (s *ghServer) reset() {
 	s.responses = []serverResponse{}
 	s.responsesIndex = 0
+	s.account = "test"
+	s.user = "nick"
+	s.channel = "chan"
 }
 
 func (s *ghServer) setResponses(r []serverResponse) {
@@ -138,6 +148,9 @@ type spreadcronTest struct {
 	send            string
 	serverResponses []serverResponse
 	recv            string
+	account         string
+	user            string
+	channel         string
 }
 
 var spreadcronTests = []spreadcronTest{
@@ -300,6 +313,15 @@ func (s *spreadcronSuite) TestSpreadcron(c *check.C) {
 
 		s.server.reset()
 		s.server.responses = test.serverResponses
+		if test.account != "" {
+			s.server.account = test.account
+		}
+		if test.channel != "" {
+			s.server.channel = test.channel
+		}
+		if test.user != "" {
+			s.server.user = test.user
+		}
 
 		tester.Start()
 		tester.Sendf(test.send)
