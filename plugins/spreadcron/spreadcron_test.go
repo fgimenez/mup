@@ -67,7 +67,7 @@ func (s *ghServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
-		if payload.Message != fmt.Sprintf("build triggered by %s on %s%s", s.user, s.account, s.channel) {
+		if payload.Message != fmt.Sprintf("build triggered by %s on %s#%s", s.user, s.account, s.channel) {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
